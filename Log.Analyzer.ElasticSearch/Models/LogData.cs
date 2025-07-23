@@ -7,6 +7,15 @@ namespace Log.Analyzer.ElasticSearch
         [Text(Name = "type")]
         public string Type { get; set; }
 
+        [Text(Name = "level")]
+        public string Level { get; set; }
+
+        [Text(Name = "exception_type")]
+        public string ExceptionType { get; set; }
+
+        [Text(Name = "stack_trace")]
+        public string StackTrace { get; set; }
+
         [Text(Name = "cid")]
         public string Cid { get; set; }
 

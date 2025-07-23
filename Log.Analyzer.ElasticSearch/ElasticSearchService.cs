@@ -5,7 +5,7 @@ namespace Log.Analyzer.ElasticSearch
 {
     public class ElasticSearchService : IElasticSearchService
     {
-        public async Task<List<string>> GetDataAsync(DateTime startDate, DateTime endDate)
+        public async Task<List<LogData>> GetDataAsync(DateTime startDate, DateTime endDate)
         {
             var queryString = "app_name : order_sync_webhook AND type : exception";
             var queryStrings = new List<string>();
@@ -27,7 +27,7 @@ namespace Log.Analyzer.ElasticSearch
             }));
 
             var response = data.SelectMany(r => r).ToList();
-            return null;
+            return response;
         }
 
         private async Task<List<LogData>> GetData(string queryString)
