@@ -51,7 +51,8 @@ namespace Log.Analyzer.ElasticSearch
                 Console.WriteLine("Total : " + response.Total);
                 Console.WriteLine("IsValid : " + response.IsValid);
                 Console.WriteLine("Documents : " + response.Documents);
-
+                Console.WriteLine("Documents : " + response);
+                
                 if (response.Documents.Count == 0)
                 {
                     break;
