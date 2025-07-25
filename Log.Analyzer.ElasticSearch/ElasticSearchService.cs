@@ -48,6 +48,10 @@ namespace Log.Analyzer.ElasticSearch
                 };
 
                 ISearchResponse<LogData> response = client.Search<LogData>(searchRequest);
+                Console.WriteLine("Total : " + response.Total);
+                Console.WriteLine("IsValid : " + response.IsValid);
+                Console.WriteLine("Documents : " + response.Documents);
+
                 if (response.Documents.Count == 0)
                 {
                     break;

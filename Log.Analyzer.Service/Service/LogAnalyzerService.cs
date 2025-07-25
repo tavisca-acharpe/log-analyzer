@@ -14,9 +14,9 @@ namespace Log.Analyzer.Service
         public async Task<List<string>> RunAnalysisAsync(List<string> products)
         {
             var todayFailures = await _elasticSearchService.GetDataAsync(DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
-            Console.WriteLine("Todays failure count {0} : " + todayFailures?.Count);
+            Console.WriteLine("Todays failure count : " + todayFailures?.Count);
             var yesterdayFailures = await _elasticSearchService.GetDataAsync(DateTime.UtcNow.AddDays(-3), DateTime.UtcNow.AddDays(-2));
-            Console.WriteLine("Yesterdays failure count {0} : " + yesterdayFailures?.Count);
+            Console.WriteLine("Yesterdays failure count : " + yesterdayFailures?.Count);
 
             var newFailures = todayFailures.Except(yesterdayFailures).ToList();
 
