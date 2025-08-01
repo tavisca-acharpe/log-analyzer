@@ -1,4 +1,5 @@
 ﻿using Log.Analyzer.ElasticSearch;
+using Log.Analyzer.EmailAdapter;
 using Log.Analyzer.Service;
 using Log.Analyzer.Service.Contract;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,7 @@ public class Program
                 // Register services here
                 services.AddSingleton<ILogAnalyzerService, LogAnalyzerService>();
                 services.AddSingleton<IElasticSearchService, ElasticSearchService>();
+                services.AddSingleton<INotifier, EmailNotifier>();
             })
             .Build();
 
@@ -43,7 +45,7 @@ public class Program
             System.Console.WriteLine();
 
             var analyzerService = services.GetRequiredService<ILogAnalyzerService>();
-            var analyzerRq = new List<string>() { "order_sync_webhook"};
+            var analyzerRq = new List<string>() { "order_sync_webhook", "nextgen_order_api", "nextgen_charge_api", "nextgen_transaction_api" };
 
             if (args.Length >= 2)
             {

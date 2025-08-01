@@ -78,8 +78,5 @@ namespace Log.Analyzer.ElasticSearch
 
         [Text(Name = "super_pnr")]
         public string Super_pnr { get; set; }
-
-        [Text(Name = "error_info")]
-        public string error_info { get; set; }
     }
 }
