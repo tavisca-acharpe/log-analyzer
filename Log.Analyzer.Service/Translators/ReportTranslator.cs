@@ -11,7 +11,7 @@ namespace Log.Analyzer.Service.Translators
             var sb = new StringBuilder();
 
             sb.AppendLine("<html><body>");
-            sb.AppendLine("<h2>Daily Kibana Elasticsearch Failure Report</h2>");
+            sb.AppendLine("<h2>Daily Failure Analysis Report</h2>");
             sb.AppendLine(data);
             sb.AppendLine("</body></html>");
 
