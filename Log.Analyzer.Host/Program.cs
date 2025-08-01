@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace MyConsoleApp;
 
@@ -18,7 +19,7 @@ public class Program
         using IHost host = Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration((context, configBuilder) =>
             {
-                configBuilder.SetBasePath(Directory.GetCurrentDirectory());
+                configBuilder.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
                 configBuilder.AddJsonFile($"appsettings.{environment}.json", optional: false);
             })
             .ConfigureServices((context, services) =>
