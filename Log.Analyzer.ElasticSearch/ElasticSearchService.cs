@@ -1,13 +1,15 @@
-﻿using Nest;
+﻿using Elasticsearch.Net;
+using Elasticsearch.Net.Aws;
+using Nest;
 using System.Collections.Concurrent;
 
 namespace Log.Analyzer.ElasticSearch
 {
     public class ElasticSearchService : IElasticSearchService
     {
-        public async Task<List<LogData>> GetDataAsync(DateTime startDate, DateTime endDate)
+        public async Task<List<LogData>> GetDataAsync(string application, DateTime startDate, DateTime endDate)
         {
-            var queryString = "app_name : order_sync_webhook AND type : exception";
+            var queryString = string.Format("app_name : {0} AND type : exception", application);
             var queryStrings = new List<string>();
 
             do
@@ -36,7 +38,7 @@ namespace Log.Analyzer.ElasticSearch
             bool moreResults = true;
             int count = 0;
 
-            var client = new ElasticClient(new ConnectionSettings(new Uri("https://es.qa.cnxloyalty.com")).DefaultIndex("logs-*").DisableDirectStreaming());
+            var client = new ElasticClient(new ConnectionSettings(new SingleNodeConnectionPool(new Uri("https://app-es.qa.cnxloyalty.com/")), new AwsHttpConnection("us-east-1")).DefaultIndex("logs-*").DisableDirectStreaming());
 
             while (moreResults)
             {
@@ -44,10 +46,15 @@ namespace Log.Analyzer.ElasticSearch
                 {
                     From = count,
                     Size = 10000,
-                    QueryOnQueryString = queryString
+                    Query = new QueryStringQuery
+                    {
+                        DefaultField = "FIELD",
+                        Query = queryString
+                    }
                 };
 
                 ISearchResponse<LogData> response = client.Search<LogData>(searchRequest);
+
                 if (response.Documents.Count == 0)
                 {
                     break;

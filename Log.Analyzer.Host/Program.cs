@@ -32,15 +32,7 @@ public class Program
 
             var analyzerService = services.GetRequiredService<ILogAnalyzerService>();
             var analyzerRq = new List<string>() { "order_sync_webhook" };
-            var response = await analyzerService.RunAnalysisAsync(analyzerRq);
-
-            if (response?.Count > 0)
-            {
-                System.Console.WriteLine("\nTotal New Failures : " + response.Count);
-                System.Console.WriteLine();
-            }
-            else
-                System.Console.WriteLine("No Failures Found");
+            await analyzerService.RunAnalysisAsync(analyzerRq);
         }
         catch (Exception ex)
         {

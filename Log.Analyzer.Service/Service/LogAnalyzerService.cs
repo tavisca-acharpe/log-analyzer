@@ -11,29 +11,36 @@ namespace Log.Analyzer.Service
             _elasticSearchService = new ElasticSearchService();
         }
 
-        public async Task<List<string>> RunAnalysisAsync(List<string> products)
+        public async Task RunAnalysisAsync(List<string> applications)
         {
-            var todayFailures = await _elasticSearchService.GetDataAsync(DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
-            Console.WriteLine("Todays failure count {0} : " + todayFailures?.Count);
-            var yesterdayFailures = await _elasticSearchService.GetDataAsync(DateTime.UtcNow.AddDays(-3), DateTime.UtcNow.AddDays(-2));
-            Console.WriteLine("Yesterdays failure count {0} : " + yesterdayFailures?.Count);
-
-            var newFailures = todayFailures.Except(yesterdayFailures).ToList();
-
-            if (newFailures.Any())
+            foreach (var application in applications)
             {
-                Console.WriteLine("New failure/exceptions since yesterday:");
-                foreach (var failure in newFailures)
+                Console.WriteLine(string.Format("******************** {0} *******************", application));
+                var todayFailures = await _elasticSearchService.GetDataAsync(application, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
+                Console.WriteLine("Todays failure count {0} : " + todayFailures?.Count);
+                var yesterdayFailures = await _elasticSearchService.GetDataAsync(application, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(-2));
+                Console.WriteLine("Yesterdays failure count {0} : " + yesterdayFailures?.Count);
+
+                var newFailures = todayFailures.Except(yesterdayFailures).ToList();
+
+                var uniqueFailures = newFailures
+                                .GroupBy(f => f.Msg)
+                                .Select(g => g.First())
+                                .ToList();
+
+                if (uniqueFailures.Any())
                 {
-                    Console.WriteLine("- " + failure);
+                    Console.WriteLine("New failure/exceptions since yesterday:");
+                    foreach (var failure in uniqueFailures)
+                    {
+                        Console.WriteLine("- " + failure.Msg);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No new failures found compared to yesterday.");
                 }
             }
-            else
-            {
-                Console.WriteLine("No new failures found compared to yesterday.");
-            }
-
-            return newFailures?.Select(x => x.Cid)?.ToList();
         }
     }
 }
