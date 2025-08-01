@@ -42,6 +42,41 @@ namespace Log.Analyzer.Service.Translators
             return emailBody;
         }
 
+        public static string GenerateExceptionHtmlTable(List<LogData> failures, string title)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine(GetCSS());
+
+            sb.AppendLine($"<h4>{WebUtility.HtmlEncode(title)}</h4>");
+            sb.Append("<table class='minimalistBlack'>");
+            var TableFormat = "<thead><tr>" +
+                                "<th>CID</th>" +
+                                "<th>ExceptionType</th>" +
+                                "<th>Msg</th>" +
+                                "</tr></thead>";
+
+            sb.Append(TableFormat);
+            sb.Append("<tbody>");
+
+            foreach (var failure in failures)
+            {
+                if (!string.IsNullOrEmpty(failure.Cid) || !string.IsNullOrWhiteSpace(failure.Msg))
+                {
+                    sb.Append($"<tr>" +
+                    $"<td>{failure.Cid}</td>" +
+                    $"<td>{failure.ExceptionType}</td>" +
+                    $"<td>{failure.Msg}</td>" +
+                    $"</tr>");
+                }
+            }
+
+            sb.AppendLine("</tbody>");
+            sb.AppendLine("</table>");
+
+            return sb.ToString();
+        }
+
         public static string GenerateFailuresHtmlTable(List<LogData> failures, string title)
         {
             var sb = new StringBuilder();
@@ -52,6 +87,8 @@ namespace Log.Analyzer.Service.Translators
             sb.Append("<table class='minimalistBlack'>");
             var TableFormat = "<thead><tr>" +
                                 "<th>CID</th>" +
+                                "<th>Api</th>" +
+                                "<th>Verb</th>" +
                                 "<th>Msg</th>" +
                                 "</tr></thead>";
 
@@ -60,10 +97,15 @@ namespace Log.Analyzer.Service.Translators
 
             foreach (var failure in failures)
             {
-                sb.Append($"<tr>" +
+                if (!string.IsNullOrEmpty(failure.Cid) || !string.IsNullOrWhiteSpace(failure.Msg))
+                {
+                    sb.Append($"<tr>" +
                     $"<td>{failure.Cid}</td>" +
+                    $"<td>{failure.Api}</td>" +
+                    $"<td>{failure.Verb}</td>" +
                     $"<td>{failure.Msg}</td>" +
                     $"</tr>");
+                }
             }
 
             sb.AppendLine("</tbody>");

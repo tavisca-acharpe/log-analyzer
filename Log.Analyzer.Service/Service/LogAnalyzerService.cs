@@ -43,7 +43,7 @@ namespace Log.Analyzer.Service
                     {
                         var exceptionMsg = "New exceptions since yesterday";
                         Console.WriteLine(exceptionMsg);
-                        exceptionBody = ReportTranslator.GenerateFailuresHtmlTable(exceptionFailures, exceptionMsg);
+                        exceptionBody = ReportTranslator.GenerateExceptionHtmlTable(exceptionFailures, exceptionMsg);
                         foreach (var failure in exceptionFailures)
                         {
                             Console.WriteLine("cid: " + failure.Cid + " ex_type: " + failure.ExceptionType + " Msg:  " + failure.Msg);
