@@ -6,9 +6,9 @@ namespace Log.Analyzer.Service
     public class LogAnalyzerService : ILogAnalyzerService
     {
         private readonly IElasticSearchService _elasticSearchService;
-        public LogAnalyzerService()
+        public LogAnalyzerService(IElasticSearchService elasticSearchService)
         {
-            _elasticSearchService = new ElasticSearchService();
+            _elasticSearchService = elasticSearchService;
         }
 
         public async Task RunAnalysisAsync(List<string> applications)
