@@ -45,6 +45,7 @@ namespace Log.Analyzer.ElasticSearch
             bool moreResults = true;
             int count = 0;
 
+            Console.WriteLine("********* url " + _esSettings.Url);
             var client = new ElasticClient(new ConnectionSettings(new SingleNodeConnectionPool(new Uri(_esSettings.Url)), new AwsHttpConnection(_esSettings.Region)).DefaultIndex(_esSettings.DefaultIndex).DisableDirectStreaming());
 
             while (moreResults)
