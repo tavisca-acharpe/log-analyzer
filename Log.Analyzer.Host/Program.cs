@@ -45,7 +45,7 @@ public class Program
             System.Console.WriteLine();
 
             var analyzerService = services.GetRequiredService<ILogAnalyzerService>();
-            var analyzerRq = new List<string>() { "order_sync_webhook" };
+            var analyzerRq = new List<string>() { "order_sync_webhook", "nextgen_order_transaction_api", "nextgen_charge_api", "nextgen_order_api" };
 
             if (args.Length >= 2)
             {
