@@ -17,23 +17,42 @@ namespace Log.Analyzer.Service
             {
                 Console.WriteLine(string.Format("******************** {0} *******************", application));
                 var todayFailures = await _elasticSearchService.GetDataAsync(application, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
-                Console.WriteLine("Todays failure count {0} : " + todayFailures?.Count);
-                var yesterdayFailures = await _elasticSearchService.GetDataAsync(application, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(-2));
-                Console.WriteLine("Yesterdays failure count {0} : " + yesterdayFailures?.Count);
+                Console.WriteLine("Todays exception & failure count : " + todayFailures?.Count);
+                var yesterdayFailures = await _elasticSearchService.GetDataAsync(application, DateTime.UtcNow.AddDays(-2), DateTime.UtcNow.AddDays(-1));
+                Console.WriteLine("Yesterdays exception & failure count : " + yesterdayFailures?.Count);
 
-                var newFailures = todayFailures.Except(yesterdayFailures).ToList();
-
-                var uniqueFailures = newFailures
-                                .GroupBy(f => f.Msg)
-                                .Select(g => g.First())
-                                .ToList();
+                var uniqueFailures = todayFailures.Except(yesterdayFailures).ToList();
 
                 if (uniqueFailures.Any())
                 {
-                    Console.WriteLine("New failure/exceptions since yesterday:");
-                    foreach (var failure in uniqueFailures)
+                    var exceptionFailures = uniqueFailures
+                                            .Where(x => x.Type == "exception")?
+                                            .GroupBy(f => f.Msg)?
+                                            .Select(g => g.First())
+                                            .ToList();
+
+                    if (exceptionFailures.Any())
                     {
-                        Console.WriteLine("- " + failure.Msg);
+                        Console.WriteLine("New exceptions since yesterday:");
+                        foreach (var failure in exceptionFailures)
+                        {
+                            Console.WriteLine("cid: " + failure.Cid + " ex_type: " + failure.ExceptionType + " Msg:  " + failure.Msg);
+                        }
+                    }
+
+                    var apiFailures = uniqueFailures
+                                       .Where(x => x.Type == "api")?
+                                       .GroupBy(f => f.Verb)?
+                                       .Select(g => g.First())
+                                       .ToList();
+
+                    if (apiFailures.Any())
+                    {
+                        Console.WriteLine("New failures since yesterday:");
+                        foreach (var failure in apiFailures)
+                        {
+                            Console.WriteLine("cid: " + failure.Cid + " api: " + failure.Api + " verb: " + failure.Verb + " Msg:  " + failure.Msg);
+                        }
                     }
                 }
                 else

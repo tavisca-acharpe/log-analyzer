@@ -9,5 +9,6 @@
         public int TimePeriodInHours { get; set; }
         public int TimePeriodInMinutes { get; set; }
         public int BatchSize { get; set; }
+        public int SplitQueryByHours { get; set; }
     }
 }

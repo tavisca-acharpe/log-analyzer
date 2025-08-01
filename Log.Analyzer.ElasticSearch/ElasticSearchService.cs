@@ -16,14 +16,18 @@ namespace Log.Analyzer.ElasticSearch
 
         public async Task<List<LogData>> GetDataAsync(string application, DateTime startDate, DateTime endDate)
         {
-            var queryString = string.Format("app_name : {0} AND type : exception", application);
+            var exceptionQuery = string.Format("app_name : {0} AND type : exception AND log_time: [{{0}} TO {{1}}]", application);
+            var failureQuery = string.Format("app_name : {0} AND type : api AND status : failure AND log_time: [{{0}} TO {{1}}]", application);
+            
             var queryStrings = new List<string>();
 
             do
             {
-                var esQuery = String.Format(queryString, startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"), startDate.AddHours(6).ToString("yyyy-MM-ddTHH:mm:ssZ"));
-                queryStrings.Add(esQuery);
-                startDate = startDate.AddHours(6);
+                var exQuery = String.Format(exceptionQuery, startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"), startDate.AddHours(_esSettings.SplitQueryByHours).ToString("yyyy-MM-ddTHH:mm:ssZ"));
+                var failQuery = String.Format(failureQuery, startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"), startDate.AddHours(_esSettings.SplitQueryByHours).ToString("yyyy-MM-ddTHH:mm:ssZ"));
+                queryStrings.Add(exQuery);
+                queryStrings.Add(failQuery);
+                startDate = startDate.AddHours(_esSettings.SplitQueryByHours);
             } while (startDate <= endDate);
 
             var data = new ConcurrentBag<List<LogData>>();
@@ -45,7 +49,6 @@ namespace Log.Analyzer.ElasticSearch
             bool moreResults = true;
             int count = 0;
 
-            Console.WriteLine("********* url " + _esSettings.Url);
             var client = new ElasticClient(new ConnectionSettings(new SingleNodeConnectionPool(new Uri(_esSettings.Url)), new AwsHttpConnection(_esSettings.Region)).DefaultIndex(_esSettings.DefaultIndex).DisableDirectStreaming());
 
             while (moreResults)
