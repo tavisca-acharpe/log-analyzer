@@ -42,13 +42,14 @@ namespace Log.Analyzer.Service.Translators
             return emailBody;
         }
 
-        public static string GenerateExceptionHtmlTable(List<LogData> failures, string title)
+        public static string GenerateExceptionHtmlTable(List<LogData> failures, int? newFailureCount, int? existingFailureCount)
         {
             var sb = new StringBuilder();
 
             sb.AppendLine(GetCSS());
 
-            sb.AppendLine($"<h4>{WebUtility.HtmlEncode(title)}</h4>");
+            sb.AppendLine($"<h4>New exception count :  {newFailureCount} Existing exception count : {existingFailureCount}</h4>");
+            sb.AppendLine($"<h4>Unique exception count : {failures.Count}</h4>");
             sb.Append("<table class='minimalistBlack'>");
             var TableFormat = "<thead><tr>" +
                                 "<th>CID</th>" +
@@ -77,13 +78,14 @@ namespace Log.Analyzer.Service.Translators
             return sb.ToString();
         }
 
-        public static string GenerateFailuresHtmlTable(List<LogData> failures, string title)
+        public static string GenerateFailuresHtmlTable(List<LogData> failures, int? newFailureCount, int? existingFailureCount)
         {
             var sb = new StringBuilder();
 
             sb.AppendLine(GetCSS());
 
-            sb.AppendLine($"<h4>{WebUtility.HtmlEncode(title)}</h4>");
+            sb.AppendLine($"<h4>New failures count :  {newFailureCount} Existing failure count : {existingFailureCount}</h4>");
+            sb.AppendLine($"<h4>Unique failure count : {failures.Count}</h4>");
             sb.Append("<table class='minimalistBlack'>");
             var TableFormat = "<thead><tr>" +
                                 "<th>CID</th>" +

@@ -43,7 +43,7 @@ namespace Log.Analyzer.Service
                     {
                         var exceptionMsg = "New exceptions since yesterday";
                         Console.WriteLine(exceptionMsg);
-                        exceptionBody = ReportTranslator.GenerateExceptionHtmlTable(exceptionFailures, exceptionMsg);
+                        exceptionBody = ReportTranslator.GenerateExceptionHtmlTable(exceptionFailures, todayFailures?.Where(f => f.Type == "exception")?.Count(), yesterdayFailures?.Where(f => f.Type == "exception")?.Count());
                         foreach (var failure in exceptionFailures)
                         {
                             Console.WriteLine("cid: " + failure.Cid + " ex_type: " + failure.ExceptionType + " Msg:  " + failure.Msg);
@@ -60,7 +60,7 @@ namespace Log.Analyzer.Service
                     {
                         var failureMsg = "New failures since yesterday";
                         Console.WriteLine(failureMsg);
-                        failureBody = ReportTranslator.GenerateFailuresHtmlTable(apiFailures, failureMsg);
+                        failureBody = ReportTranslator.GenerateFailuresHtmlTable(apiFailures, todayFailures?.Where(f => f.Type == "api")?.Count(), yesterdayFailures?.Where(f => f.Type == "api")?.Count());
                         foreach (var failure in apiFailures)
                         {
                             Console.WriteLine("cid: " + failure.Cid + " api: " + failure.Api + " verb: " + failure.Verb + " Msg:  " + failure.Msg);
