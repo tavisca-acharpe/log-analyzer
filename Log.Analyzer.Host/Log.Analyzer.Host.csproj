@@ -10,10 +10,19 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
+	<PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
+	<PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.1.0" />
+	<PackageReference Include="AWSSDK.Lambda" Version="3.7.303.45" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Log.Analyzer.Service\Log.Analyzer.Service.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<None Update="appsettings.*.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	
 </Project>

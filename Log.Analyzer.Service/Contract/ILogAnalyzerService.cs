@@ -2,6 +2,6 @@
 {
     public interface ILogAnalyzerService
     {
-        Task RunAnalysisAsync(List<string> applications);
+        Task RunAnalysisAsync(List<string> applications, DateTime startDate, DateTime endDate);
     }
 }

@@ -2,21 +2,32 @@
 using Elasticsearch.Net.Aws;
 using Nest;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Configuration;
 
 namespace Log.Analyzer.ElasticSearch
 {
     public class ElasticSearchService : IElasticSearchService
     {
+        private readonly ESConfigurations _esSettings;
+        public ElasticSearchService(IConfiguration configuration)
+        {
+            _esSettings = configuration.GetSection("ElasticSearch").Get<ESConfigurations>();
+        }
+
         public async Task<List<LogData>> GetDataAsync(string application, DateTime startDate, DateTime endDate)
         {
-            var queryString = string.Format("app_name : {0} AND type : exception", application);
+            var exceptionQuery = string.Format(_esSettings.ExceptionQuery, application);
+            var failureQuery = string.Format(_esSettings.FailureQuery, application);
+            
             var queryStrings = new List<string>();
 
             do
             {
-                var esQuery = String.Format(queryString, startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"), startDate.AddHours(6).ToString("yyyy-MM-ddTHH:mm:ssZ"));
-                queryStrings.Add(esQuery);
-                startDate = startDate.AddHours(6);
+                var exQuery = String.Format(exceptionQuery, startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"), startDate.AddHours(_esSettings.SplitQueryByHours).ToString("yyyy-MM-ddTHH:mm:ssZ"));
+                var failQuery = String.Format(failureQuery, startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"), startDate.AddHours(_esSettings.SplitQueryByHours).ToString("yyyy-MM-ddTHH:mm:ssZ"));
+                queryStrings.Add(exQuery);
+                queryStrings.Add(failQuery);
+                startDate = startDate.AddHours(_esSettings.SplitQueryByHours);
             } while (startDate <= endDate);
 
             var data = new ConcurrentBag<List<LogData>>();
@@ -38,14 +49,14 @@ namespace Log.Analyzer.ElasticSearch
             bool moreResults = true;
             int count = 0;
 
-            var client = new ElasticClient(new ConnectionSettings(new SingleNodeConnectionPool(new Uri("https://app-es.qa.cnxloyalty.com/")), new AwsHttpConnection("us-east-1")).DefaultIndex("logs-*").DisableDirectStreaming());
+            var client = new ElasticClient(new ConnectionSettings(new SingleNodeConnectionPool(new Uri(_esSettings.Url)), new AwsHttpConnection(_esSettings.Region)).DefaultIndex(_esSettings.DefaultIndex).DisableDirectStreaming());
 
             while (moreResults)
             {
                 var searchRequest = new SearchRequest
                 {
                     From = count,
-                    Size = 10000,
+                    Size = _esSettings.BatchSize,
                     Query = new QueryStringQuery
                     {
                         DefaultField = "FIELD",
@@ -65,7 +76,7 @@ namespace Log.Analyzer.ElasticSearch
                     responses.Add(data);
                 }
 
-                count += 10000;
+                count += _esSettings.BatchSize;
             }
             return responses;
         }

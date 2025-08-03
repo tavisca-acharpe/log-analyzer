@@ -7,17 +7,17 @@ namespace Log.Analyzer.ElasticSearch
         [Text(Name = "type")]
         public string Type { get; set; }
 
-        [Text(Name = "level")]
-        public string Level { get; set; }
+        [Text(Name = "msg")]
+        public string Msg { get; set; }
 
-        [Text(Name = "exception_type")]
+        [Text(Name = "cid")]
+        public string Cid { get; set; }
+
+        [Text(Name = "ex_type")]
         public string ExceptionType { get; set; }
 
         [Text(Name = "stack_trace")]
         public string StackTrace { get; set; }
-
-        [Text(Name = "cid")]
-        public string Cid { get; set; }
 
         [Text(Name = "tid")]
         public string Tid { get; set; }
@@ -30,9 +30,6 @@ namespace Log.Analyzer.ElasticSearch
 
         [Text(Name = "api")]
         public string Api { get; set; }
-
-        [Text(Name = "msg")]
-        public string Msg { get; set; }
 
         [Text(Name = "json_rq_headers.cnx-tenantid")]
         public string CnxTenantId { get; set; }
@@ -81,8 +78,5 @@ namespace Log.Analyzer.ElasticSearch
 
         [Text(Name = "super_pnr")]
         public string Super_pnr { get; set; }
-
-        [Text(Name = "error_info")]
-        public string error_info { get; set; }
     }
 }

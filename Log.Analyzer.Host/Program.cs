@@ -1,27 +1,42 @@
-﻿using Log.Analyzer.Service;
+﻿using Log.Analyzer.ElasticSearch;
+using Log.Analyzer.EmailAdapter;
+using Log.Analyzer.Service;
 using Log.Analyzer.Service.Contract;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
+using System.Globalization;
+using System.Reflection;
 
-namespace MyConsoleApp;
+namespace Log.Analyzer.Host;
 
 public class Program
 {
     public static async Task Main(string[] args)
     {
-        using IHost host = Host.CreateDefaultBuilder(args)
+        var environment = args.FirstOrDefault() ?? "qa";
+        Console.WriteLine($"Running environment: {environment}");
+
+        using IHost host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((context, configBuilder) =>
+            {
+                configBuilder.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
+                configBuilder.AddJsonFile($"appsettings.{environment}.json", optional: false);
+            })
             .ConfigureServices((context, services) =>
             {
                 // Register services here
                 services.AddSingleton<ILogAnalyzerService, LogAnalyzerService>();
+                services.AddSingleton<IElasticSearchService, ElasticSearchService>();
+                services.AddSingleton<INotifier, EmailNotifier>();
             })
             .Build();
 
-        await RunLogAnalyzerTool(host.Services);
+        await RunLogAnalyzerTool(host.Services, args);
     }
 
-    private static async Task RunLogAnalyzerTool(IServiceProvider services)
+    private static async Task RunLogAnalyzerTool(IServiceProvider services, string[] args)
     {
         Stopwatch watch = Stopwatch.StartNew();
 
@@ -31,8 +46,13 @@ public class Program
             System.Console.WriteLine();
 
             var analyzerService = services.GetRequiredService<ILogAnalyzerService>();
-            var analyzerRq = new List<string>() { "order_sync_webhook" };
-            await analyzerService.RunAnalysisAsync(analyzerRq);
+            var analyzerRq = new List<string>() { "order_sync_webhook", "nextgen_order_transaction_api", "nextgen_charge_api", "nextgen_order_api" };
+            DateTime startDate = DateTime.UtcNow.AddDays(-1);
+            DateTime compareStartDate = DateTime.UtcNow.AddDays(-1);
+
+            ReadInputParameters(args, ref analyzerRq, ref startDate, ref compareStartDate);
+
+            await analyzerService.RunAnalysisAsync(analyzerRq, startDate, compareStartDate);
         }
         catch (Exception ex)
         {
@@ -44,6 +64,50 @@ public class Program
         {
             System.Console.WriteLine();
             System.Console.WriteLine($"Log Analyzer Execution Done....Total Time taken {watch.ElapsedMilliseconds}");
+        }
+    }
+
+    private static void ReadInputParameters(string[] args, ref List<string> analyzerRq, ref DateTime startDate, ref DateTime compareStartDate)
+    {
+        if (args.Length >= 2)
+        {
+            string appsArg = args[1];
+            string[] applications = appsArg.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+            Console.WriteLine("Applications to run :");
+            foreach (var app in applications)
+            {
+                Console.WriteLine($"- {app}");
+            }
+            analyzerRq = applications.ToList();
+        }
+
+        if (args.Length >= 3)
+        {
+            string inputDateTime = args[2];
+            if (DateTime.TryParseExact(inputDateTime, "yyyy-MM-dd HH:mm:ss",
+                CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTime parsedDateTime))
+            {
+                startDate = parsedDateTime;
+            }
+            else
+            {
+                Console.WriteLine("Invalid start date time format. Default DataTime : " + startDate);
+            }
+        }
+
+        if (args.Length >= 4)
+        {
+            string inputDateTime = args[3];
+            if (DateTime.TryParseExact(inputDateTime, "yyyy-MM-dd HH:mm:ss",
+                CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTime parsedDateTime))
+            {
+                compareStartDate = parsedDateTime;
+            }
+            else
+            {
+                Console.WriteLine("Invalid compare date time format. Default DataTime : " + compareStartDate);
+            }
         }
     }
 }
