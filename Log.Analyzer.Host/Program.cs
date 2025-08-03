@@ -47,8 +47,8 @@ public class Program
 
             var analyzerService = services.GetRequiredService<ILogAnalyzerService>();
             var analyzerRq = new List<string>() { "order_sync_webhook", "nextgen_order_transaction_api", "nextgen_charge_api", "nextgen_order_api" };
-            DateTime startDate = DateTime.UtcNow.AddDays(-1);
-            DateTime compareStartDate = DateTime.UtcNow.AddDays(-1);
+            DateTime startDate = DateTime.UtcNow.AddDays(-2);
+            DateTime compareStartDate = DateTime.UtcNow.AddDays(-2);
 
             ReadInputParameters(args, ref analyzerRq, ref startDate, ref compareStartDate);
 
