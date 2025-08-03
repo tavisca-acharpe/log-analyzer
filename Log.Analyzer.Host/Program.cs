@@ -15,7 +15,8 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        var environment = args.FirstOrDefault() ?? "stage";
+        Console.WriteLine("Input Paramter Length : " + args.Length);
+        var environment = args.FirstOrDefault() ?? "qa";
         Console.WriteLine($"Running environment: {environment}");
 
         using IHost host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
@@ -69,8 +70,6 @@ public class Program
 
     private static void ReadInputParameters(string[] args, ref List<string> analyzerRq, ref DateTime startDate, ref DateTime compareStartDate)
     {
-        Console.WriteLine("***** input paramter length ******** : " + args.Length);
-
         if (args.Length >= 2)
         {
             string appsArg = args[1];
