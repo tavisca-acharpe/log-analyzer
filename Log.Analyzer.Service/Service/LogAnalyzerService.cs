@@ -15,15 +15,15 @@ namespace Log.Analyzer.Service
             _notifier = notifier;
         }
 
-        public async Task RunAnalysisAsync(List<string> applications)
+        public async Task RunAnalysisAsync(List<string> applications, DateTime startDate, DateTime compareStartDate)
         {
             var emailBody = string.Empty;
             foreach (var application in applications)
             {
                 Console.WriteLine(string.Format("******************** {0} *******************", application));
-                var todayFailures = await _elasticSearchService.GetDataAsync(application, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
+                var todayFailures = await _elasticSearchService.GetDataAsync(application, startDate, DateTime.UtcNow);
                 Console.WriteLine("Todays exception count : " + todayFailures?.Where(f => f.Type == "exception")?.Count() + " & failure count : " + todayFailures?.Where(f => f.Type == "api")?.Count());
-                var yesterdayFailures = await _elasticSearchService.GetDataAsync(application, DateTime.UtcNow.AddDays(-2), DateTime.UtcNow.AddDays(-1));
+                var yesterdayFailures = await _elasticSearchService.GetDataAsync(application, compareStartDate, startDate);
                 Console.WriteLine("Yesterdays exception count : " + yesterdayFailures?.Where(f => f.Type == "exception")?.Count() + " & failure count : " + yesterdayFailures?.Where(f => f.Type == "api")?.Count());
 
                 var uniqueFailures = todayFailures.Except(yesterdayFailures).ToList();
