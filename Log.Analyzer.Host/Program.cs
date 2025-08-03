@@ -69,7 +69,7 @@ public class Program
 
     private static void ReadInputParameters(string[] args, ref List<string> analyzerRq, ref DateTime startDate, ref DateTime compareStartDate)
     {
-        Console.WriteLine("*****args len******** : " + args.Length);
+        Console.WriteLine("***** input paramter length ******** : " + args.Length);
 
         if (args.Length >= 2)
         {
