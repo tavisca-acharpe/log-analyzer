@@ -15,6 +15,7 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
+        //abc
         var environment = args.FirstOrDefault() ?? "qa";
         Console.WriteLine($"Running environment: {environment}");
 
