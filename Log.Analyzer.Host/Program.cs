@@ -15,7 +15,7 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        var environment = args.FirstOrDefault() ?? "qa";
+        var environment = args.FirstOrDefault() ?? "stage";
         Console.WriteLine($"Running environment: {environment}");
 
         using IHost host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
