@@ -16,8 +16,8 @@ namespace Log.Analyzer.ElasticSearch
 
         public async Task<List<LogData>> GetDataAsync(string application, DateTime startDate, DateTime endDate)
         {
-            var exceptionQuery = string.Format("app_name : {0} AND type : exception AND log_time: [{{0}} TO {{1}}]", application);
-            var failureQuery = string.Format("app_name : {0} AND type : api AND status : failure AND log_time: [{{0}} TO {{1}}]", application);
+            var exceptionQuery = string.Format(_esSettings.ExceptionQuery, application);
+            var failureQuery = string.Format(_esSettings.FailureQuery, application);
             
             var queryStrings = new List<string>();
 

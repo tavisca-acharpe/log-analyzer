@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace MyConsoleApp;
+namespace Log.Analyzer.Host;
 
 public class Program
 {
@@ -17,7 +17,7 @@ public class Program
         var environment = args.FirstOrDefault() ?? "qa";
         Console.WriteLine($"Running environment: {environment}");
 
-        using IHost host = Host.CreateDefaultBuilder(args)
+        using IHost host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration((context, configBuilder) =>
             {
                 configBuilder.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
