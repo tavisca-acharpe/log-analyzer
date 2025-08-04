@@ -112,8 +112,7 @@ public class Program
         if (args.Length >= 4)
         {
             string inputDateTime = args[3];
-            if (DateTime.TryParseExact(inputDateTime, "yyyy-MM-dd HH:mm:ss",
-                CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTime parsedDateTime))
+            if (DateTime.TryParse(inputDateTime, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDateTime))
             {
                 startDate = parsedDateTime;
             }
@@ -126,8 +125,7 @@ public class Program
         if (args.Length >= 5)
         {
             string inputDateTime = args[4];
-            if (DateTime.TryParseExact(inputDateTime, "yyyy-MM-dd HH:mm:ss",
-                CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTime parsedDateTime))
+            if (DateTime.TryParse(inputDateTime, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDateTime))
             {
                 compareStartDate = parsedDateTime;
             }
