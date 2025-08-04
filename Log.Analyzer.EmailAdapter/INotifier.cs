@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Log.Analyzer.EmailAdapter
 {
     public interface INotifier
     {
-        Task SendNotification(string report);
+        Task SendNotification(string report, List<string> toAddressesEmail);
     }
 }

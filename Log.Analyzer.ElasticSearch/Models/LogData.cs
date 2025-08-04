@@ -16,6 +16,9 @@ namespace Log.Analyzer.ElasticSearch
         [Text(Name = "ex_type")]
         public string ExceptionType { get; set; }
 
+        [Text(Name = "source")]
+        public string Source { get; set; }
+
         [Text(Name = "stack_trace")]
         public string StackTrace { get; set; }
 

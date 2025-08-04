@@ -15,7 +15,7 @@ namespace Log.Analyzer.Service
             _notifier = notifier;
         }
 
-        public async Task RunAnalysisAsync(List<string> applications, DateTime startDate, DateTime compareStartDate)
+        public async Task RunAnalysisAsync(List<string> applications, DateTime startDate, DateTime compareStartDate, List<string> toAddressesEmail)
         {
             var emailBody = string.Empty;
             foreach (var application in applications)
@@ -44,7 +44,7 @@ namespace Log.Analyzer.Service
 
             if (!string.IsNullOrWhiteSpace(emailBody))
             {
-                await _notifier.SendNotification(ReportTranslator.ToHTMLReport(emailBody));
+                await _notifier.SendNotification(ReportTranslator.ToHTMLReport(emailBody), toAddressesEmail);
             }
         }
 

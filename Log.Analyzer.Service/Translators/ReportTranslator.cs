@@ -52,9 +52,10 @@ namespace Log.Analyzer.Service.Translators
             sb.AppendLine($"<h4>Unique exception count : {failures.Count}</h4>");
             sb.Append("<table class='minimalistBlack'>");
             var TableFormat = "<thead><tr>" +
-                                "<th>CID</th>" +
-                                "<th>ExceptionType</th>" +
+                                "<th>CID</th>" +                  
                                 "<th>Msg</th>" +
+                                "<th>ExceptionType</th>" +
+                                "<th>Source</th>" +
                                 "</tr></thead>";
 
             sb.Append(TableFormat);
@@ -66,8 +67,9 @@ namespace Log.Analyzer.Service.Translators
                 {
                     sb.Append($"<tr>" +
                     $"<td>{failure.Cid}</td>" +
-                    $"<td>{failure.ExceptionType}</td>" +
                     $"<td>{failure.Msg}</td>" +
+                    $"<td>{failure.ExceptionType}</td>" +
+                     $"<td>{failure.Source}</td>" +
                     $"</tr>");
                 }
             }

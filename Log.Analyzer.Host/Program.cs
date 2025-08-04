@@ -48,12 +48,13 @@ public class Program
 
             var analyzerService = services.GetRequiredService<ILogAnalyzerService>();
             var analyzerRq = new List<string>() { "order_sync_webhook", "nextgen_order_transaction_api", "nextgen_charge_api", "nextgen_order_api" };
-            DateTime startDate = DateTime.UtcNow.AddDays(-2);
+            DateTime startDate = DateTime.UtcNow.AddDays(-1);
             DateTime compareStartDate = DateTime.UtcNow.AddDays(-2);
+            var toAddressEmail = new List<string>() { "acharpe@tavisca.com" };
 
-            ReadInputParameters(args, ref analyzerRq, ref startDate, ref compareStartDate);
+            ReadInputParameters(args, ref analyzerRq, ref startDate, ref compareStartDate, ref toAddressEmail);
 
-            await analyzerService.RunAnalysisAsync(analyzerRq, startDate, compareStartDate);
+            await analyzerService.RunAnalysisAsync(analyzerRq, startDate, compareStartDate, toAddressEmail);
         }
         catch (Exception ex)
         {
@@ -68,7 +69,7 @@ public class Program
         }
     }
 
-    private static void ReadInputParameters(string[] args, ref List<string> analyzerRq, ref DateTime startDate, ref DateTime compareStartDate)
+    private static void ReadInputParameters(string[] args, ref List<string> analyzerRq, ref DateTime startDate, ref DateTime compareStartDate, ref List<string> toAddressEmail)
     {
         if (args.Length >= 2)
         {
@@ -85,7 +86,20 @@ public class Program
 
         if (args.Length >= 3)
         {
-            string inputDateTime = args[2];
+            string appsArg = args[2];
+            string[] emails = appsArg.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+            Console.WriteLine("Emails to send :");
+            foreach (var email in emails)
+            {
+                Console.WriteLine($"- {email}");
+            }
+            toAddressEmail = emails.ToList();
+        }
+
+        if (args.Length >= 4)
+        {
+            string inputDateTime = args[3];
             if (DateTime.TryParseExact(inputDateTime, "yyyy-MM-dd HH:mm:ss",
                 CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTime parsedDateTime))
             {
@@ -97,9 +111,9 @@ public class Program
             }
         }
 
-        if (args.Length >= 4)
+        if (args.Length >= 5)
         {
-            string inputDateTime = args[3];
+            string inputDateTime = args[4];
             if (DateTime.TryParseExact(inputDateTime, "yyyy-MM-dd HH:mm:ss",
                 CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTime parsedDateTime))
             {
