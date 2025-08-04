@@ -115,6 +115,7 @@ public class Program
             if (DateTime.TryParse(inputDateTime, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDateTime))
             {
                 startDate = parsedDateTime;
+                Console.WriteLine("Start DataTime : " + startDate);
             }
             else
             {
@@ -128,6 +129,7 @@ public class Program
             if (DateTime.TryParse(inputDateTime, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDateTime))
             {
                 compareStartDate = parsedDateTime;
+                Console.WriteLine("Compare Start DataTime : " + compareStartDate);
             }
             else
             {
