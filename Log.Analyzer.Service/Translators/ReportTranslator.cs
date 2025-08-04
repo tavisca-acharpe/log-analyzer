@@ -42,7 +42,7 @@ namespace Log.Analyzer.Service.Translators
             return emailBody;
         }
 
-        public static string GenerateExceptionHtmlTable(List<LogData> failures, int? newFailureCount, int? existingFailureCount)
+        public static string GenerateExceptionHtmlTable(List<LogData> failures, int newFailureCount, int existingFailureCount)
         {
             var sb = new StringBuilder();
 
@@ -80,7 +80,7 @@ namespace Log.Analyzer.Service.Translators
             return sb.ToString();
         }
 
-        public static string GenerateFailuresHtmlTable(List<LogData> failures, int? newFailureCount, int? existingFailureCount)
+        public static string GenerateFailuresHtmlTable(List<LogData> failures, int newFailureCount, int existingFailureCount)
         {
             var sb = new StringBuilder();
 
@@ -118,12 +118,13 @@ namespace Log.Analyzer.Service.Translators
             return sb.ToString();
         }
 
-        public static string BookingHtmlTableStart()
+        public static string BookingHtmlTableStart(string type, int latestCount, int existingCount)
         {
             var sb = new StringBuilder();
             sb.AppendLine(GetCSS());
 
-            sb.AppendLine($"<h4>Status For Latest Any 5 Orders</h4>");
+            sb.AppendLine($"<h3>Latest {type} Count : {latestCount} & Yesterday {type} Count : {existingCount} </h3>");
+            sb.AppendLine($"<h4>Latest Status of Any 5 Orders</h4>");
             sb.Append("<table class='minimalistBlack'>");
             var TableFormat = "<thead><tr>" +
                                 "<th>CID</th>" +

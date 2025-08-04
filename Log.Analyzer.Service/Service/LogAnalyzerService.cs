@@ -24,6 +24,7 @@ namespace Log.Analyzer.Service
             var emailBody = string.Empty;
 
             emailBody = await GetBookingStats(startDate, emailBody);
+            emailBody = await GetCancellationStats(startDate, emailBody);
             emailBody = await GetExceptionAndFailures(applications, startDate, compareStartDate, emailBody);
 
             if (!string.IsNullOrWhiteSpace(emailBody))
@@ -35,24 +36,26 @@ namespace Log.Analyzer.Service
         private async Task<string> GetBookingStats(DateTime startDate, string emailBody)
         {
             Console.WriteLine("Checking Latest Booking Logs");
-            var bookings = await _elasticSearchService.GetDataAsync(_esSettings.BookingStatsQuery, startDate, DateTime.UtcNow);
-            Console.WriteLine("Todays bookings count : " + bookings?.Count);
+            var latestBookings = await _elasticSearchService.GetDataAsync(_esSettings.BookingStatsQuery, startDate, DateTime.UtcNow);
+            var existingBookings = await _elasticSearchService.GetDataAsync(_esSettings.BookingStatsQuery, startDate.AddDays(-1), DateTime.UtcNow.AddDays(-1));
+            
+            Console.WriteLine("Latest bookings count : " + latestBookings?.Count + " Yesterday bookings count : " + existingBookings?.Count);
 
             //Validate any 5 cids 
-            if (bookings.Any())
+            if (latestBookings.Any())
             {
-                var latestFive = bookings
+                var latestFive = latestBookings
                               .OrderBy(item => item.TimeStamp)
                               .Take(5)
                               .ToList();
 
-                emailBody = string.Concat(emailBody, ReportTranslator.BookingHtmlTableStart());
+                emailBody = string.Concat(emailBody, ReportTranslator.BookingHtmlTableStart("Booking", latestBookings?.Count ?? 0, existingBookings?.Count ?? 0));
                 foreach (var booking in latestFive)
                 {
                     var nsSorcQuery = string.Format(_esSettings.SorcBookingQuery, booking.Cid);
                     var ngSorc = await _elasticSearchService.GetDataAsync(nsSorcQuery, startDate, DateTime.UtcNow);
 
-                    var travcomQuery = string.Format(_esSettings.SorcBookingQuery, booking.Cid);
+                    var travcomQuery = string.Format(_esSettings.TravcomBookingQuery, booking.Cid);
                     var travCom = await _elasticSearchService.GetDataAsync(travcomQuery, startDate, DateTime.UtcNow);
 
                     var dataMeshQuery = string.Format(_esSettings.DataMeshBookingQuery, booking.Cid);
@@ -65,6 +68,46 @@ namespace Log.Analyzer.Service
             else
             {
                 Console.WriteLine("No new bookings");
+            }
+
+            return emailBody;
+        }
+
+        private async Task<string> GetCancellationStats(DateTime startDate, string emailBody)
+        {
+            Console.WriteLine("Checking Latest cancellation Logs");
+            var latestBookings = await _elasticSearchService.GetDataAsync(_esSettings.CancellationStatsQuery, startDate, DateTime.UtcNow);
+            var existingBookings = await _elasticSearchService.GetDataAsync(_esSettings.CancellationStatsQuery, startDate.AddDays(-1), DateTime.UtcNow.AddDays(-1));
+
+            Console.WriteLine("Latest cancellation count : " + latestBookings?.Count + " Yesterday cancellation count : " + existingBookings?.Count);
+
+            //Validate any 5 cids 
+            if (latestBookings.Any())
+            {
+                var latestFive = latestBookings
+                              .OrderBy(item => item.TimeStamp)
+                              .Take(5)
+                              .ToList();
+
+                emailBody = string.Concat(emailBody, ReportTranslator.BookingHtmlTableStart("Cancellation", latestBookings?.Count ?? 0, existingBookings?.Count ?? 0));
+                foreach (var booking in latestFive)
+                {
+                    var nsSorcQuery = string.Format(_esSettings.SorcCancelQuery, booking.Cid);
+                    var ngSorc = await _elasticSearchService.GetDataAsync(nsSorcQuery, startDate, DateTime.UtcNow);
+
+                    var travcomQuery = string.Format(_esSettings.TravcomCancelQuery, booking.Cid);
+                    var travCom = await _elasticSearchService.GetDataAsync(travcomQuery, startDate, DateTime.UtcNow);
+
+                    var dataMeshQuery = string.Format(_esSettings.DataMeshCancelQuery, booking.Cid);
+                    var dataMesh = await _elasticSearchService.GetDataAsync(travcomQuery, startDate, DateTime.UtcNow);
+
+                    emailBody = string.Concat(emailBody, ReportTranslator.BookingHtmlTableValues(booking.Cid, booking.Status, ngSorc?.FirstOrDefault().Status, travCom?.FirstOrDefault().Status, dataMesh?.FirstOrDefault().Status));
+                }
+                emailBody = string.Concat(emailBody, ReportTranslator.BookingHtmlTableEnd());
+            }
+            else
+            {
+                Console.WriteLine("No new cancellations");
             }
 
             return emailBody;
@@ -125,7 +168,7 @@ namespace Log.Analyzer.Service
             {
                 var failureMsg = "New failures since yesterday";
                 Console.WriteLine(failureMsg);
-                failureBody = ReportTranslator.GenerateFailuresHtmlTable(apiFailures, todayFailures?.Where(f => f.Type == "api")?.Count(), yesterdayFailures?.Where(f => f.Type == "api")?.Count());
+                failureBody = ReportTranslator.GenerateFailuresHtmlTable(apiFailures, todayFailures?.Where(f => f.Type == "api")?.Count() ?? 0, yesterdayFailures?.Where(f => f.Type == "api")?.Count() ?? 0);
                 foreach (var failure in apiFailures)
                 {
                     Console.WriteLine("cid: " + failure.Cid + " api: " + failure.Api + " verb: " + failure.Verb + " Msg:  " + failure.Msg);
@@ -148,7 +191,7 @@ namespace Log.Analyzer.Service
             {
                 var exceptionMsg = "New exceptions since yesterday";
                 Console.WriteLine(exceptionMsg);
-                exceptionBody = ReportTranslator.GenerateExceptionHtmlTable(exceptionFailures, todayFailures?.Where(f => f.Type == "exception")?.Count(), yesterdayFailures?.Where(f => f.Type == "exception")?.Count());
+                exceptionBody = ReportTranslator.GenerateExceptionHtmlTable(exceptionFailures, todayFailures?.Where(f => f.Type == "exception")?.Count() ?? 0, yesterdayFailures?.Where(f => f.Type == "exception")?.Count() ?? 0);
                 foreach (var failure in exceptionFailures)
                 {
                     Console.WriteLine("cid: " + failure.Cid + " ex_type: " + failure.ExceptionType + " Msg:  " + failure.Msg);
