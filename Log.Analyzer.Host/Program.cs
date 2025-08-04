@@ -16,6 +16,10 @@ public class Program
     public static async Task Main(string[] args)
     {
         Console.WriteLine("Input Paramter Length : " + args.Length);
+        foreach (var item in args)
+        {
+            Console.WriteLine($"*************Items environment: {item}");
+        }
         var environment = args.FirstOrDefault() ?? "qa";
         Console.WriteLine($"Running environment: {environment}");
 
