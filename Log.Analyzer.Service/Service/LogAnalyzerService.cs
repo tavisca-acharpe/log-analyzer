@@ -59,7 +59,7 @@ namespace Log.Analyzer.Service
                     var travCom = await _elasticSearchService.GetDataAsync(travcomQuery, startDate, DateTime.UtcNow);
 
                     var dataMeshQuery = string.Format(_esSettings.DataMeshBookingQuery, booking.Cid);
-                    var dataMesh = await _elasticSearchService.GetDataAsync(travcomQuery, startDate, DateTime.UtcNow);
+                    var dataMesh = await _elasticSearchService.GetDataAsync(dataMeshQuery, startDate, DateTime.UtcNow);
 
                     emailBody = string.Concat(emailBody, ReportTranslator.BookingHtmlTableValues(booking.Cid, booking.Status, ngSorc?.FirstOrDefault()?.Status, travCom?.FirstOrDefault()?.Status, dataMesh?.FirstOrDefault()?.Status));
                 }
@@ -99,7 +99,7 @@ namespace Log.Analyzer.Service
                     var travCom = await _elasticSearchService.GetDataAsync(travcomQuery, startDate, DateTime.UtcNow);
 
                     var dataMeshQuery = string.Format(_esSettings.DataMeshCancelQuery, booking.Cid);
-                    var dataMesh = await _elasticSearchService.GetDataAsync(travcomQuery, startDate, DateTime.UtcNow);
+                    var dataMesh = await _elasticSearchService.GetDataAsync(dataMeshQuery, startDate, DateTime.UtcNow);
 
                     emailBody = string.Concat(emailBody, ReportTranslator.BookingHtmlTableValues(booking.Cid, booking.Status, ngSorc?.FirstOrDefault()?.Status, travCom?.FirstOrDefault()?.Status, dataMesh?.FirstOrDefault()?.Status));
                 }
