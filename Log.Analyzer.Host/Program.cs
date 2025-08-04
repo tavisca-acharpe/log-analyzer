@@ -15,15 +15,11 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        Console.WriteLine("Input Paramter Length : " + args.Length);
-        foreach (var item in args)
-        {
-            Console.WriteLine($"*************Items environment: {item}");
-        }
-        var environment = args.FirstOrDefault() ?? "qa";
+        string[] inputs = args[0].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var environment = inputs.FirstOrDefault() ?? "qa";
         Console.WriteLine($"Running environment: {environment}");
 
-        using IHost host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
+        using IHost host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(inputs)
             .ConfigureAppConfiguration((context, configBuilder) =>
             {
                 configBuilder.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
@@ -38,7 +34,7 @@ public class Program
             })
             .Build();
 
-        await RunLogAnalyzerTool(host.Services, args);
+        await RunLogAnalyzerTool(host.Services, inputs);
     }
 
     private static async Task RunLogAnalyzerTool(IServiceProvider services, string[] args)
