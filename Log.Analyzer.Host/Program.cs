@@ -19,6 +19,7 @@ public class Program
         string[] inputs = args;
         if (args.Length > 0)
         {
+            Console.WriteLine($"Input arg seprated by + : {args[0]}");
             inputs = args[0].Split('+');
         }
  
