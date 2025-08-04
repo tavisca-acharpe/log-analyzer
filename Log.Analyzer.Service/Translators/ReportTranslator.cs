@@ -23,7 +23,7 @@ namespace Log.Analyzer.Service.Translators
         public static string GenerateApplicationHtmlTable(this string application, string exception, string failure)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"<h5> Application : {application}</h3>");
+            sb.AppendLine($"<h4> Application : {application}</h4>");
 
             if (!string.IsNullOrEmpty(exception))
             {
@@ -128,7 +128,7 @@ namespace Log.Analyzer.Service.Translators
             sb.Append("<table class='minimalistBlack'>");
             var TableFormat = "<thead><tr>" +
                                 "<th>CID</th>" +
-                                "<th>Booking</th>" +
+                                $"<th>{type}</th>" +
                                 "<th>NGSORC</th>" +
                                 "<th>Travcom</th>" +
                                 "<th>DataMesh</th>" +
