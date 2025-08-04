@@ -19,7 +19,7 @@ public class Program
         string[] inputs = args;
         if (args.Length > 0)
         {
-            inputs = args[0].Split(',');
+            inputs = args[0].Split('+');
         }
  
         var environment = inputs.FirstOrDefault() ?? "qa";
