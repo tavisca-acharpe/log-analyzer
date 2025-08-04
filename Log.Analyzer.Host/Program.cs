@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
+using System;
 
 namespace Log.Analyzer.Host;
 
@@ -18,7 +19,7 @@ public class Program
         string[] inputs = args;
         if (args.Length > 0)
         {
-            inputs = args[0].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            inputs = args[0].Split(',');
         }
  
         var environment = inputs.FirstOrDefault() ?? "qa";
@@ -81,12 +82,15 @@ public class Program
             string appsArg = args[1];
             string[] applications = appsArg.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-            Console.WriteLine("Applications to run :");
-            foreach (var app in applications)
+            if (applications.Length > 0)
             {
-                Console.WriteLine($"- {app}");
+                Console.WriteLine("Applications to run :");
+                foreach (var app in applications)
+                {
+                    Console.WriteLine($"- {app}");
+                }
+                analyzerRq = applications.ToList();
             }
-            analyzerRq = applications.ToList();
         }
 
         if (args.Length >= 3)
@@ -94,12 +98,15 @@ public class Program
             string appsArg = args[2];
             string[] emails = appsArg.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-            Console.WriteLine("Emails to send :");
-            foreach (var email in emails)
+            if (emails.Length > 0)
             {
-                Console.WriteLine($"- {email}");
+                Console.WriteLine("Emails to send :");
+                foreach (var email in emails)
+                {
+                    Console.WriteLine($"- {email}");
+                }
+                toAddressEmail = emails.ToList();
             }
-            toAddressEmail = emails.ToList();
         }
 
         if (args.Length >= 4)
