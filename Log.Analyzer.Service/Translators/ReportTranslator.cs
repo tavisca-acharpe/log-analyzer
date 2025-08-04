@@ -23,7 +23,7 @@ namespace Log.Analyzer.Service.Translators
         public static string GenerateApplicationHtmlTable(this string application, string exception, string failure)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"<h3> Application : {application}</h3>");
+            sb.AppendLine($"<h5> Application : {application}</h3>");
 
             if (!string.IsNullOrEmpty(exception))
             {
@@ -52,7 +52,7 @@ namespace Log.Analyzer.Service.Translators
             sb.AppendLine($"<h4>Unique exception count : {failures.Count}</h4>");
             sb.Append("<table class='minimalistBlack'>");
             var TableFormat = "<thead><tr>" +
-                                "<th>CID</th>" +                  
+                                "<th>CID</th>" +
                                 "<th>Msg</th>" +
                                 "<th>ExceptionType</th>" +
                                 "<th>Source</th>" +
@@ -115,6 +115,49 @@ namespace Log.Analyzer.Service.Translators
             sb.AppendLine("</tbody>");
             sb.AppendLine("</table>");
 
+            return sb.ToString();
+        }
+
+        public static string BookingHtmlTableStart()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(GetCSS());
+
+            sb.AppendLine($"<h4>Status For Latest Any 5 Orders</h4>");
+            sb.Append("<table class='minimalistBlack'>");
+            var TableFormat = "<thead><tr>" +
+                                "<th>CID</th>" +
+                                "<th>Booking</th>" +
+                                "<th>NGSORC</th>" +
+                                "<th>Travcom</th>" +
+                                "<th>DataMesh</th>" +
+                                "</tr></thead>";
+
+            sb.Append(TableFormat);
+            sb.Append("<tbody>");
+            return sb.ToString();
+        }
+
+        public static string BookingHtmlTableValues(string cid, string bookingStatus, string ngSorcStatus, string travComStatus, string dataMeshStatus)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine(GetCSS());
+            sb.Append($"<tr>" +
+              $"<td>{cid}</td>" +
+              $"<td>{bookingStatus}</td>" +
+              $"<td>{ngSorcStatus}</td>" +
+              $"<td>{travComStatus}</td>" +
+              $"<td>{dataMeshStatus}</td>" +
+              $"</tr>");
+            return sb.ToString();
+        }
+
+        public static string BookingHtmlTableEnd()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("</tbody>");
+            sb.AppendLine("</table>");
             return sb.ToString();
         }
 

@@ -15,7 +15,12 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        string[] inputs = args[0].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        string[] inputs = args;
+        if (args.Length > 0)
+        {
+            inputs = args[0].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        }
+ 
         var environment = inputs.FirstOrDefault() ?? "qa";
         Console.WriteLine($"Running environment: {environment}");
 
@@ -47,7 +52,7 @@ public class Program
             System.Console.WriteLine();
 
             var analyzerService = services.GetRequiredService<ILogAnalyzerService>();
-            var analyzerRq = new List<string>() { "order_sync_webhook", "nextgen_order_transaction_api", "nextgen_charge_api", "nextgen_order_api" };
+            var analyzerRq = new List<string>() { "order_sync_webhook"};
             DateTime startDate = DateTime.UtcNow.AddDays(-1);
             DateTime compareStartDate = DateTime.UtcNow.AddDays(-2);
             var toAddressEmail = new List<string>() { "acharpe@tavisca.com" };

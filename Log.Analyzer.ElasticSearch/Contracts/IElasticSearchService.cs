@@ -2,6 +2,6 @@
 {
     public interface IElasticSearchService
     {
-        Task<List<LogData>> GetDataAsync(string application, DateTime startDate, DateTime endDate);
+        Task<List<LogData>> GetDataAsync(string query, DateTime startDate, DateTime endDate);
     }
 }

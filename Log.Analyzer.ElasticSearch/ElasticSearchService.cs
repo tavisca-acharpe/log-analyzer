@@ -14,19 +14,13 @@ namespace Log.Analyzer.ElasticSearch
             _esSettings = configuration.GetSection("ElasticSearch").Get<ESConfigurations>();
         }
 
-        public async Task<List<LogData>> GetDataAsync(string application, DateTime startDate, DateTime endDate)
+        public async Task<List<LogData>> GetDataAsync(string query, DateTime startDate, DateTime endDate)
         {
-            var exceptionQuery = string.Format(_esSettings.ExceptionQuery, application);
-            var failureQuery = string.Format(_esSettings.FailureQuery, application);
-            
             var queryStrings = new List<string>();
-
             do
             {
-                var exQuery = String.Format(exceptionQuery, startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"), startDate.AddHours(_esSettings.SplitQueryByHours).ToString("yyyy-MM-ddTHH:mm:ssZ"));
-                var failQuery = String.Format(failureQuery, startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"), startDate.AddHours(_esSettings.SplitQueryByHours).ToString("yyyy-MM-ddTHH:mm:ssZ"));
+                var exQuery = String.Format(query, startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"), startDate.AddHours(_esSettings.SplitQueryByHours).ToString("yyyy-MM-ddTHH:mm:ssZ"));
                 queryStrings.Add(exQuery);
-                queryStrings.Add(failQuery);
                 startDate = startDate.AddHours(_esSettings.SplitQueryByHours);
             } while (startDate <= endDate);
 
