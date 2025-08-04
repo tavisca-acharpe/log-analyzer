@@ -15,7 +15,7 @@ namespace Log.Analyzer.EmailAdapter
 
         public async Task SendNotification(string report, List<string> toAddressesEmail)
         {
-            System.Console.WriteLine("Email detailed fetched. : " + string.Join(" | ", "acharpe@tavisca.com"));
+            System.Console.WriteLine("Email detailed fetched. : " + string.Join(" | ", toAddressesEmail));
             try
             {
                 using (var client = new AmazonSimpleEmailServiceClient(RegionEndpoint.USEast1))
