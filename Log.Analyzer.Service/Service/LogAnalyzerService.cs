@@ -157,12 +157,17 @@ namespace Log.Analyzer.Service
         {
             var failureBody = string.Empty;
 
-            if (uniqueFailures.Any())
+            var uniqueFailuresGrouped = uniqueFailures
+                                       .GroupBy(f => f.Msg)?
+                                       .Select(g => g.First())
+                                       .ToList();
+
+            if (uniqueFailuresGrouped.Any())
             {
                 var failureMsg = "\nNew failures since yesterday";
                 Console.WriteLine(failureMsg);
-                failureBody = ReportTranslator.GenerateFailuresHtmlTable(uniqueFailures, todayFailures?.Count ?? 0, yesterdayFailures?.Count ?? 0);
-                foreach (var failure in uniqueFailures)
+                failureBody = ReportTranslator.GenerateFailuresHtmlTable(uniqueFailuresGrouped, todayFailures?.Count ?? 0, yesterdayFailures?.Count ?? 0);
+                foreach (var failure in uniqueFailuresGrouped)
                 {
                     Console.WriteLine("cid: " + failure.Cid + " api: " + failure.Api + " verb: " + failure.Verb + " Msg:  " + failure.Msg);
                 }
@@ -175,12 +180,17 @@ namespace Log.Analyzer.Service
         {
             var exceptionBody = string.Empty;
 
-            if (uniqueFailures.Any())
+            var uniqueFailuresGrouped = uniqueFailures
+                                       .GroupBy(f => f.Msg)?
+                                       .Select(g => g.First())
+                                       .ToList();
+
+            if (uniqueFailuresGrouped.Any())
             {
                 var exceptionMsg = "\nNew exceptions since yesterday";
                 Console.WriteLine(exceptionMsg);
-                exceptionBody = ReportTranslator.GenerateExceptionHtmlTable(uniqueFailures, todayFailures?.Count ?? 0, yesterdayFailures?.Count ?? 0);
-                foreach (var failure in uniqueFailures)
+                exceptionBody = ReportTranslator.GenerateExceptionHtmlTable(uniqueFailuresGrouped, todayFailures?.Count ?? 0, yesterdayFailures?.Count ?? 0);
+                foreach (var failure in uniqueFailuresGrouped)
                 {
                     Console.WriteLine("cid: " + failure.Cid + " ex_type: " + failure.ExceptionType + " Msg:  " + failure.Msg);
                 }
