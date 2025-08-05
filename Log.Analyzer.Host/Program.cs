@@ -16,8 +16,6 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        args = new string[1];
-        args[0] = "prod+order_sync_webhook+acharpe@tavisca.com+08/05/2025 03:00:00+08/04/2025 03:00:00+";
         string[] inputs = args;
         if (args.Length > 0)
         {
