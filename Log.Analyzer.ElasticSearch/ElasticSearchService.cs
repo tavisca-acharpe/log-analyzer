@@ -17,12 +17,21 @@ namespace Log.Analyzer.ElasticSearch
         public async Task<List<LogData>> GetDataAsync(string query, DateTime startDate, DateTime endDate)
         {
             var queryStrings = new List<string>();
-            do
+
+            if (endDate > startDate.AddHours(_esSettings.SplitQueryByHours))
             {
-                var exQuery = String.Format(query, startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"), startDate.AddHours(_esSettings.SplitQueryByHours).ToString("yyyy-MM-ddTHH:mm:ssZ"));
+                do
+                {
+                    var exQuery = String.Format(query, startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"), startDate.AddHours(_esSettings.SplitQueryByHours).ToString("yyyy-MM-ddTHH:mm:ssZ"));
+                    queryStrings.Add(exQuery);
+                    startDate = startDate.AddHours(_esSettings.SplitQueryByHours);
+                } while (startDate <= endDate);
+            }
+            else
+            {
+                var exQuery = String.Format(query, startDate.ToString("yyyy-MM-ddTHH:mm:ssZ"), endDate.ToString("yyyy-MM-ddTHH:mm:ssZ"));
                 queryStrings.Add(exQuery);
-                startDate = startDate.AddHours(_esSettings.SplitQueryByHours);
-            } while (startDate <= endDate);
+            }
 
             var data = new ConcurrentBag<List<LogData>>();
 
