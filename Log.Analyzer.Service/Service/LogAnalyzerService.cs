@@ -36,12 +36,19 @@ namespace Log.Analyzer.Service
         private async Task<string> GetBookingStats(DateTime startDate, string emailBody)
         {
             Console.WriteLine("Checking Latest Booking Logs");
-            var latestBookings = await _elasticSearchService.GetDataAsync(_esSettings.BookingStatsQuery, startDate, DateTime.UtcNow);
-            var existingBookings = await _elasticSearchService.GetDataAsync(_esSettings.BookingStatsQuery, startDate.AddDays(-1), DateTime.UtcNow.AddDays(-1));
-            
+
+            var todayEndTime = DateTime.UtcNow;
+            Console.WriteLine("Todays StartTime : " + startDate + " Todays EndTime : " + todayEndTime);
+            var latestBookings = await _elasticSearchService.GetDataAsync(_esSettings.BookingStatsQuery, startDate, todayEndTime);
+
+            var yesterdayStartTime = startDate.AddDays(-1);
+            var yesterdayEndTime = DateTime.UtcNow.AddDays(-1);
+            Console.WriteLine("Todays StartTime : " + startDate + " Todays EndTime : " + todayEndTime);
+            var existingBookings = await _elasticSearchService.GetDataAsync(_esSettings.BookingStatsQuery, yesterdayStartTime, yesterdayEndTime);
+
             Console.WriteLine("Latest bookings count : " + latestBookings?.Count + " Yesterday bookings count : " + existingBookings?.Count);
 
-            //Validate any 5 cids 
+            //Validate any 5 cids
             if (latestBookings.Any())
             {
                 var latestFive = latestBookings
@@ -76,12 +83,19 @@ namespace Log.Analyzer.Service
         private async Task<string> GetCancellationStats(DateTime startDate, string emailBody)
         {
             Console.WriteLine("\nChecking Latest cancellation Logs");
-            var latestBookings = await _elasticSearchService.GetDataAsync(_esSettings.CancellationStatsQuery, startDate, DateTime.UtcNow);
-            var existingBookings = await _elasticSearchService.GetDataAsync(_esSettings.CancellationStatsQuery, startDate.AddDays(-1), DateTime.UtcNow.AddDays(-1));
+
+            var todayEndTime = DateTime.UtcNow;
+            Console.WriteLine("Todays StartTime : " + startDate + " Todays EndTime : " + todayEndTime);
+            var latestBookings = await _elasticSearchService.GetDataAsync(_esSettings.CancellationStatsQuery, startDate, todayEndTime);
+
+            var yesterdayStartTime = startDate.AddDays(-1);
+            var yesterdayEndTime = DateTime.UtcNow.AddDays(-1);
+            Console.WriteLine("Todays StartTime : " + startDate + " Todays EndTime : " + todayEndTime);
+            var existingBookings = await _elasticSearchService.GetDataAsync(_esSettings.CancellationStatsQuery, yesterdayStartTime, yesterdayEndTime);
 
             Console.WriteLine("Latest cancellation count : " + latestBookings?.Count + " Yesterday cancellation count : " + existingBookings?.Count);
 
-            //Validate any 5 cids 
+            //Validate any 5 cids
             if (latestBookings.Any())
             {
                 var latestFive = latestBookings
