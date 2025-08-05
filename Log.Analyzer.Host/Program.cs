@@ -23,7 +23,9 @@ public class Program
             {
                 Console.WriteLine($"Input arg seprated by + : {args[i]}");
             }
-            inputs = args[0].Split('+');
+            var combineString = string.Join(" ", args);
+            Console.WriteLine($"Combine String + : {combineString}");
+            inputs = combineString.Split('+');
         }
  
         var environment = inputs.FirstOrDefault() ?? "qa";
