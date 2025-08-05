@@ -118,6 +118,7 @@ namespace Log.Analyzer.Service
             foreach (var application in applications)
             {
                 Console.WriteLine(string.Format("\n******************** {0} *******************", application));
+                Console.WriteLine("StartTime : " + startDate + " CompareTime : " + compareStartDate);
 
                 var exceptionQuery = string.Format(_esSettings.ExceptionQuery, application);
                 var apiFailuresQuery = string.Format(_esSettings.FailureQuery, application);
@@ -125,24 +126,21 @@ namespace Log.Analyzer.Service
                 var todayExceptionFailures = await _elasticSearchService.GetDataAsync(exceptionQuery, startDate, DateTime.UtcNow);
                 var todayApiFailures = await _elasticSearchService.GetDataAsync(apiFailuresQuery, startDate, DateTime.UtcNow);
 
-                var todayFailures = todayExceptionFailures;
-                todayFailures.AddRange(todayApiFailures);
                 Console.WriteLine("Todays exception count : " + todayExceptionFailures?.Count + " & failure count : " + todayApiFailures?.Count);
 
                 var yesterdayExceptionFailures = await _elasticSearchService.GetDataAsync(exceptionQuery, compareStartDate, startDate);
                 var yesterdayApiFailures = await _elasticSearchService.GetDataAsync(apiFailuresQuery, compareStartDate, startDate);
 
-                var yesterdayFailures = yesterdayExceptionFailures;
-                yesterdayFailures.AddRange(yesterdayApiFailures);
                 Console.WriteLine("Yesterdays exception count : " + yesterdayExceptionFailures?.Count + " & failure count : " + yesterdayApiFailures?.Count);
 
-                var uniqueFailures = todayFailures.Except(yesterdayFailures).ToList();
+                var uniqueExceptionFailures = todayExceptionFailures.Except(yesterdayExceptionFailures).ToList();
+                var uniqueApiFailures = todayApiFailures.Except(yesterdayApiFailures).ToList();
 
-                if (uniqueFailures.Any())
+                if (uniqueExceptionFailures.Any() || uniqueApiFailures.Any())
                 {
-                    string exceptionBody = GetExceptionFailures(todayFailures, yesterdayFailures, uniqueFailures);
+                    string exceptionBody = GetExceptionFailures(todayExceptionFailures, yesterdayExceptionFailures, uniqueExceptionFailures);
 
-                    string failureBody = GetApiFailures(todayFailures, yesterdayFailures, uniqueFailures);
+                    string failureBody = GetApiFailures(todayApiFailures, yesterdayApiFailures, uniqueApiFailures);
 
                     emailBody = string.Concat(emailBody, ReportTranslator.GenerateApplicationHtmlTable(application, exceptionBody, failureBody));
                 }
@@ -158,18 +156,13 @@ namespace Log.Analyzer.Service
         private static string GetApiFailures(List<LogData> todayFailures, List<LogData> yesterdayFailures, List<LogData> uniqueFailures)
         {
             var failureBody = string.Empty;
-            var apiFailures = uniqueFailures
-                               .Where(x => x.Type == "api")?
-                               .GroupBy(f => f.Verb)?
-                               .Select(g => g.First())
-                               .ToList();
 
-            if (apiFailures.Any())
+            if (uniqueFailures.Any())
             {
                 var failureMsg = "\nNew failures since yesterday";
                 Console.WriteLine(failureMsg);
-                failureBody = ReportTranslator.GenerateFailuresHtmlTable(apiFailures, todayFailures?.Where(f => f.Type == "api")?.Count() ?? 0, yesterdayFailures?.Where(f => f.Type == "api")?.Count() ?? 0);
-                foreach (var failure in apiFailures)
+                failureBody = ReportTranslator.GenerateFailuresHtmlTable(uniqueFailures, todayFailures?.Count ?? 0, yesterdayFailures?.Count ?? 0);
+                foreach (var failure in uniqueFailures)
                 {
                     Console.WriteLine("cid: " + failure.Cid + " api: " + failure.Api + " verb: " + failure.Verb + " Msg:  " + failure.Msg);
                 }
@@ -181,18 +174,13 @@ namespace Log.Analyzer.Service
         private static string GetExceptionFailures(List<LogData>? todayFailures, List<LogData>? yesterdayFailures, List<LogData> uniqueFailures)
         {
             var exceptionBody = string.Empty;
-            var exceptionFailures = uniqueFailures
-                                    .Where(x => x.Type == "exception")?
-                                    .GroupBy(f => f.Msg)?
-                                    .Select(g => g.First())
-                                    .ToList();
 
-            if (exceptionFailures.Any())
+            if (uniqueFailures.Any())
             {
                 var exceptionMsg = "\nNew exceptions since yesterday";
                 Console.WriteLine(exceptionMsg);
-                exceptionBody = ReportTranslator.GenerateExceptionHtmlTable(exceptionFailures, todayFailures?.Where(f => f.Type == "exception")?.Count() ?? 0, yesterdayFailures?.Where(f => f.Type == "exception")?.Count() ?? 0);
-                foreach (var failure in exceptionFailures)
+                exceptionBody = ReportTranslator.GenerateExceptionHtmlTable(uniqueFailures, todayFailures?.Count ?? 0, yesterdayFailures?.Count ?? 0);
+                foreach (var failure in uniqueFailures)
                 {
                     Console.WriteLine("cid: " + failure.Cid + " ex_type: " + failure.ExceptionType + " Msg:  " + failure.Msg);
                 }
