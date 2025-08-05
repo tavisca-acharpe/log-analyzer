@@ -43,7 +43,7 @@ namespace Log.Analyzer.Service
 
             var yesterdayStartTime = startDate.AddDays(-1);
             var yesterdayEndTime = DateTime.UtcNow.AddDays(-1);
-            Console.WriteLine("Todays StartTime : " + startDate + " Todays EndTime : " + todayEndTime);
+            Console.WriteLine("Yesterdays StartTime : " + yesterdayStartTime + " Yesterdays EndTime : " + yesterdayEndTime);
             var existingBookings = await _elasticSearchService.GetDataAsync(_esSettings.BookingStatsQuery, yesterdayStartTime, yesterdayEndTime);
 
             Console.WriteLine("Latest bookings count : " + latestBookings?.Count + " Yesterday bookings count : " + existingBookings?.Count);
@@ -90,7 +90,7 @@ namespace Log.Analyzer.Service
 
             var yesterdayStartTime = startDate.AddDays(-1);
             var yesterdayEndTime = DateTime.UtcNow.AddDays(-1);
-            Console.WriteLine("Todays StartTime : " + startDate + " Todays EndTime : " + todayEndTime);
+            Console.WriteLine("Yesterdays StartTime : " + yesterdayStartTime + " Yesterdays EndTime : " + yesterdayEndTime);
             var existingBookings = await _elasticSearchService.GetDataAsync(_esSettings.CancellationStatsQuery, yesterdayStartTime, yesterdayEndTime);
 
             Console.WriteLine("Latest cancellation count : " + latestBookings?.Count + " Yesterday cancellation count : " + existingBookings?.Count);
