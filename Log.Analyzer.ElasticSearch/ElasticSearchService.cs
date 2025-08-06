@@ -37,7 +37,7 @@ namespace Log.Analyzer.ElasticSearch
 
             await Task.WhenAll(
             queryStrings.Select(async query =>
-            {
+            {   
                 var result = await GetData(query);
                 data.Add(result);
             }));

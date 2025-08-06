@@ -82,7 +82,7 @@ namespace Log.Analyzer.ElasticSearch
         [Text(Name = "json_rq_headers")]
         public Dictionary<string, string> RqHeaders { get; set; }
 
-        [Text(Name = "super_pnr")]
-        public string Super_pnr { get; set; }
+        [Text(Name = "success_count")]
+        public int SuccessCount { get; set; }
     }
 }
