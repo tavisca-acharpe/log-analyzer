@@ -159,9 +159,11 @@ namespace Log.Analyzer.Service
 
             if (missingOrders.Any())
             {
+                Console.WriteLine("Missing SPNR Count For NGSORC Order Creation : " + missingOrders?.Count);
                 emailBody = string.Concat(emailBody, ReportTranslator.SorcCreateOrderDiffernceTable(missingOrders?.Count ?? 0));
                 foreach (var booking in missingOrders)
                 {
+                    Console.WriteLine("CID : " + booking?.Cid + " SPNR : " + booking?.SuperPNR + " OrderID : " + booking?.OrderId + " Tid : " + booking?.Tid);
                     emailBody = string.Concat(emailBody, ReportTranslator.SorcCreateOrderTableValues(booking.Cid, booking.SuperPNR, booking.OrderId, booking.Tid));
                 }
                 emailBody = string.Concat(emailBody, ReportTranslator.BookingHtmlTableEnd());
