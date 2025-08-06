@@ -58,6 +58,9 @@ namespace Log.Analyzer.ElasticSearch
         [Text(Name = "superpnr")]
         public string SuperPNR { get; set; }
 
+        [Text(Name = "order_id")]
+        public string OrderId { get; set; }
+
         [Text(Name = "clientId")]
         public string ClientId { get; set; }
 

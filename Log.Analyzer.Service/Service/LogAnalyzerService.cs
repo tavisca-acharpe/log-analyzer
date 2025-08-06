@@ -25,6 +25,7 @@ namespace Log.Analyzer.Service
 
             emailBody = await GetBookingStats(startDate, emailBody);
             emailBody = await GetCancellationStats(startDate, emailBody);
+            //emailBody = await GetNgSorcFailureStats(startDate, emailBody);
             emailBody = await GetExceptionAndFailures(applications, startDate, compareStartDate, emailBody);
 
             if (!string.IsNullOrWhiteSpace(emailBody))
@@ -35,6 +36,7 @@ namespace Log.Analyzer.Service
 
         private async Task<string> GetBookingStats(DateTime startDate, string emailBody)
         {
+            Console.WriteLine("\n**********************************************");
             Console.WriteLine("Checking Latest Booking Logs");
 
             var todayEndTime = DateTime.UtcNow;
@@ -82,7 +84,8 @@ namespace Log.Analyzer.Service
 
         private async Task<string> GetCancellationStats(DateTime startDate, string emailBody)
         {
-            Console.WriteLine("\nChecking Latest cancellation Logs");
+            Console.WriteLine("\n**********************************************");
+            Console.WriteLine("Checking Latest cancellation Logs");
 
             var todayEndTime = DateTime.UtcNow;
             Console.WriteLine("Todays StartTime : " + startDate + " Todays EndTime : " + todayEndTime);
@@ -122,6 +125,40 @@ namespace Log.Analyzer.Service
             else
             {
                 Console.WriteLine("\nNo new cancellations");
+            }
+
+            return emailBody;
+        }
+
+        private async Task<string> GetNgSorcFailureStats(DateTime startDate, string emailBody)
+        {
+            Console.WriteLine("\n**********************************************");
+            Console.WriteLine("\nSORC Create Order Checking Last 12 hrs Bookings");
+
+            var startTime = DateTime.UtcNow.AddHours(-12);
+            var endTime = DateTime.UtcNow;
+            Console.WriteLine("Booking Logs StartTime : " + startDate + " EndTime : " + endTime);
+            var latestBookings = await _elasticSearchService.GetDataAsync(_esSettings.BookingSuccessStatsQuery, startDate, endTime);
+            Console.WriteLine("Total Booking Count : " + latestBookings?.Count);
+
+            Console.WriteLine("Sorc Logs StartTime : " + startDate + " EndTime : " + endTime.AddMinutes(5));
+            var ngSorcCreateOrder = await _elasticSearchService.GetDataAsync(_esSettings.NgSorcCreateOrder, startDate, endTime.AddMinutes(5));
+            Console.WriteLine("NgSorc create order count : " + latestBookings?.Count);
+
+            var missingOrders = ngSorcCreateOrder?.Where(o2 => !latestBookings.Any(o1 => o1.SuperPNR == o2.SuperPNR))?.ToList();
+
+            if (missingOrders.Any())
+            {
+                emailBody = string.Concat(emailBody, ReportTranslator.SorcCreateOrderDiffernceTable(missingOrders?.Count ?? 0));
+                foreach (var booking in missingOrders)
+                {
+                    emailBody = string.Concat(emailBody, ReportTranslator.SorcCreateOrderTableValues(booking.Cid, booking.SuperPNR, booking.OrderId));
+                }
+                emailBody = string.Concat(emailBody, ReportTranslator.BookingHtmlTableEnd());
+            }
+            else
+            {
+                Console.WriteLine("No Differnce Found");
             }
 
             return emailBody;

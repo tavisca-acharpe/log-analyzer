@@ -162,6 +162,38 @@ namespace Log.Analyzer.Service.Translators
             return sb.ToString();
         }
 
+        public static string SorcCreateOrderDiffernceTable(int differnceCount)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(GetCSS());
+
+            sb.AppendLine($"<h3>Found {differnceCount} missing SPNR");
+            sb.AppendLine($"<h4>Missing SPNR Count For NGSORC Order Creation</h4>");
+            sb.Append("<table class='minimalistBlack'>");
+            var TableFormat = "<thead><tr>" +
+                                "<th>CID</th>" +
+                                $"<th>SPNR</th>" +
+                                "<th>OrderId</th>" +
+                                "</tr></thead>";
+
+            sb.Append(TableFormat);
+            sb.Append("<tbody>");
+            return sb.ToString();
+        }
+
+        public static string SorcCreateOrderTableValues(string cid, string spnr, string orderId)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine(GetCSS());
+            sb.Append($"<tr>" +
+              $"<td>{cid}</td>" +
+              $"<td>{spnr}</td>" +
+              $"<td>{orderId}</td>" +
+              $"</tr>");
+            return sb.ToString();
+        }
+
         public static string GetCSS()
         {
             return @"<head>
