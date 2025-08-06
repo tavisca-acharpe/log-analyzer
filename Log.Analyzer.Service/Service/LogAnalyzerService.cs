@@ -25,7 +25,7 @@ namespace Log.Analyzer.Service
 
             emailBody = await GetBookingStats(startDate, emailBody);
             emailBody = await GetCancellationStats(startDate, emailBody);
-            emailBody = await GetNgSorcFailureStats(startDate, emailBody);
+            //emailBody = await GetNgSorcFailureStats(startDate, emailBody);
             emailBody = await GetExceptionAndFailures(applications, startDate, compareStartDate, emailBody);
 
             if (!string.IsNullOrWhiteSpace(emailBody))
