@@ -55,7 +55,7 @@ namespace Log.Analyzer.ElasticSearch
         [Text(Name = "time_taken_ms")]
         public decimal TimeTakenMs { get; set; }
 
-        [Text(Name = "superpnr")]
+        [Text(Name = "spnr")]
         public string SuperPNR { get; set; }
 
         [Text(Name = "order_id")]
