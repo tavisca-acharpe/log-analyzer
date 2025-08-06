@@ -174,6 +174,7 @@ namespace Log.Analyzer.Service.Translators
                                 "<th>CID</th>" +
                                 $"<th>SPNR</th>" +
                                 "<th>OrderId</th>" +
+                                "<th>Tid</th>" +
                                 "</tr></thead>";
 
             sb.Append(TableFormat);
@@ -181,7 +182,7 @@ namespace Log.Analyzer.Service.Translators
             return sb.ToString();
         }
 
-        public static string SorcCreateOrderTableValues(string cid, string spnr, string orderId)
+        public static string SorcCreateOrderTableValues(string cid, string spnr, string orderId, string tid)
         {
             var sb = new StringBuilder();
 
@@ -190,6 +191,7 @@ namespace Log.Analyzer.Service.Translators
               $"<td>{cid}</td>" +
               $"<td>{spnr}</td>" +
               $"<td>{orderId}</td>" +
+              $"<td>{tid}</td>" +
               $"</tr>");
             return sb.ToString();
         }

@@ -155,14 +155,14 @@ namespace Log.Analyzer.Service
             var ngSorcCreateOrder = await _elasticSearchService.GetDataAsync(_esSettings.NgSorcCreateOrder, startDate, endTime.AddMinutes(5));
             Console.WriteLine("NgSorc create order count : " + ngSorcCreateOrder?.Count);
 
-            var missingOrders = ngSorcCreateOrder?.Where(o2 => !latestBookings.Any(o1 => o1.SuperPNR == o2.SuperPNR))?.ToList();
+            var missingOrders = latestBookings?.Where(o1 => !ngSorcCreateOrder.Any(o2 => o2.SuperPNR == o1.SuperPNR))?.ToList();
 
             if (missingOrders.Any())
             {
                 emailBody = string.Concat(emailBody, ReportTranslator.SorcCreateOrderDiffernceTable(missingOrders?.Count ?? 0));
                 foreach (var booking in missingOrders)
                 {
-                    emailBody = string.Concat(emailBody, ReportTranslator.SorcCreateOrderTableValues(booking.Cid, booking.SuperPNR, booking.OrderId));
+                    emailBody = string.Concat(emailBody, ReportTranslator.SorcCreateOrderTableValues(booking.Cid, booking.SuperPNR, booking.OrderId, booking.Tid));
                 }
                 emailBody = string.Concat(emailBody, ReportTranslator.BookingHtmlTableEnd());
             }
