@@ -137,6 +137,10 @@ namespace Log.Analyzer.Service
                 Console.WriteLine("SORC Report Disabled.");
                 return emailBody; // Exit the method
             }
+            else
+            {
+                toAddressesEmail.Remove("sorc");
+            }
 
             Console.WriteLine("\n**********************************************");
             Console.WriteLine("\nSORC Create Order Checking Last 12 hrs Bookings");
