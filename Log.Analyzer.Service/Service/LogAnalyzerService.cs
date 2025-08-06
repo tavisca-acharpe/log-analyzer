@@ -25,7 +25,7 @@ namespace Log.Analyzer.Service
 
             emailBody = await GetBookingStats(startDate, emailBody);
             emailBody = await GetCancellationStats(startDate, emailBody);
-            //emailBody = await GetNgSorcFailureStats(startDate, emailBody);
+            emailBody = await GetNgSorcFailureStats(startDate, emailBody, toAddressesEmail);
             emailBody = await GetExceptionAndFailures(applications, startDate, compareStartDate, emailBody);
 
             if (!string.IsNullOrWhiteSpace(emailBody))
@@ -130,8 +130,14 @@ namespace Log.Analyzer.Service
             return emailBody;
         }
 
-        private async Task<string> GetNgSorcFailureStats(DateTime startDate, string emailBody)
+        private async Task<string> GetNgSorcFailureStats(DateTime startDate, string emailBody, List<string> toAddressesEmail)
         {
+            if (!toAddressesEmail.Contains("sorc"))
+            {
+                Console.WriteLine("SORC Report Disabled.");
+                return emailBody; // Exit the method
+            }
+
             Console.WriteLine("\n**********************************************");
             Console.WriteLine("\nSORC Create Order Checking Last 12 hrs Bookings");
 
@@ -143,7 +149,7 @@ namespace Log.Analyzer.Service
 
             Console.WriteLine("Sorc Logs StartTime : " + startDate + " EndTime : " + endTime.AddMinutes(5));
             var ngSorcCreateOrder = await _elasticSearchService.GetDataAsync(_esSettings.NgSorcCreateOrder, startDate, endTime.AddMinutes(5));
-            Console.WriteLine("NgSorc create order count : " + latestBookings?.Count);
+            Console.WriteLine("NgSorc create order count : " + ngSorcCreateOrder?.Count);
 
             var missingOrders = ngSorcCreateOrder?.Where(o2 => !latestBookings.Any(o1 => o1.SuperPNR == o2.SuperPNR))?.ToList();
 
