@@ -36,6 +36,7 @@ namespace Log.Analyzer.Service
 
         private async Task<string> GetBookingStats(DateTime startDate, string emailBody)
         {
+            Console.WriteLine("\n**********************************************");
             Console.WriteLine("Checking Latest Booking Logs");
 
             var todayEndTime = DateTime.UtcNow;
@@ -83,7 +84,8 @@ namespace Log.Analyzer.Service
 
         private async Task<string> GetCancellationStats(DateTime startDate, string emailBody)
         {
-            Console.WriteLine("\nChecking Latest cancellation Logs");
+            Console.WriteLine("\n**********************************************");
+            Console.WriteLine("Checking Latest cancellation Logs");
 
             var todayEndTime = DateTime.UtcNow;
             Console.WriteLine("Todays StartTime : " + startDate + " Todays EndTime : " + todayEndTime);
@@ -130,14 +132,16 @@ namespace Log.Analyzer.Service
 
         private async Task<string> GetNgSorcFailureStats(DateTime startDate, string emailBody)
         {
-            Console.WriteLine("Checking Last 12 hrs Bookings");
+            Console.WriteLine("\n**********************************************");
+            Console.WriteLine("\nSORC Create Order Checking Last 12 hrs Bookings");
 
             var startTime = DateTime.UtcNow.AddHours(-12);
             var endTime = DateTime.UtcNow;
-            Console.WriteLine("Booking Logs StartTime : " + startDate + " Todays EndTime : " + endTime);
+            Console.WriteLine("Booking Logs StartTime : " + startDate + " EndTime : " + endTime);
             var latestBookings = await _elasticSearchService.GetDataAsync(_esSettings.BookingSuccessStatsQuery, startDate, endTime);
+            Console.WriteLine("Total Booking Count : " + latestBookings?.Count);
 
-            Console.WriteLine("Sorc Logs StartTime : " + startDate + " Todays EndTime : " + endTime.AddMinutes(5));
+            Console.WriteLine("Sorc Logs StartTime : " + startDate + " EndTime : " + endTime.AddMinutes(5));
             var ngSorcCreateOrder = await _elasticSearchService.GetDataAsync(_esSettings.NgSorcCreateOrder, startDate, endTime.AddMinutes(5));
             Console.WriteLine("NgSorc create order count : " + latestBookings?.Count);
 
