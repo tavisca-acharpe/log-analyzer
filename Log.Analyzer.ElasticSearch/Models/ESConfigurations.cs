@@ -17,5 +17,7 @@
         public string SorcCancelQuery { get; set; }
         public string TravcomCancelQuery { get; set; }
         public string DataMeshCancelQuery { get; set; }
+        public string BookingSuccessStatsQuery { get; set; }
+        public string NgSorcCreateOrder { get; set; }
     }
 }
