@@ -145,7 +145,7 @@ namespace Log.Analyzer.Service
             Console.WriteLine("\n**********************************************");
             Console.WriteLine("\nSORC Create Order Checking Last 12 hrs Bookings");
 
-            var startTime = DateTime.UtcNow.AddHours(-12);
+            var startTime = DateTime.UtcNow.AddHours(-24);
             var endTime = DateTime.UtcNow.AddMinutes(-10);
             Console.WriteLine("Booking Logs StartTime : " + startDate + " EndTime : " + endTime);
             var latestBookings = await _elasticSearchService.GetDataAsync(_esSettings.BookingSuccessStatsQuery, startDate, endTime);
@@ -153,8 +153,8 @@ namespace Log.Analyzer.Service
 
             Console.WriteLine("Total Booking Count : " + successBookings?.Count);
 
-            Console.WriteLine("Sorc Logs StartTime : " + startDate + " EndTime : " + endTime);
-            var ngSorcCreateOrder = await _elasticSearchService.GetDataAsync(_esSettings.NgSorcCreateOrder, startDate, endTime);
+            Console.WriteLine("Sorc Logs StartTime : " + startDate + " EndTime : " + DateTime.UtcNow);
+            var ngSorcCreateOrder = await _elasticSearchService.GetDataAsync(_esSettings.NgSorcCreateOrder, startDate, DateTime.UtcNow);
             Console.WriteLine("NgSorc create order count : " + ngSorcCreateOrder?.Count);
 
             var missingOrders = successBookings?.Where(o1 => !ngSorcCreateOrder.Any(o2 => o2.SuperPNR == o1.SuperPNR))?.ToList();
