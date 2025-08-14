@@ -63,10 +63,11 @@ public class Program
             DateTime startDate = DateTime.UtcNow.AddDays(-1);
             DateTime compareStartDate = DateTime.UtcNow.AddDays(-2);
             var toAddressEmail = new List<string>() { "acharpe@tavisca.com" };
+            bool executeSorcReport = false;
 
-            ReadInputParameters(args, ref analyzerRq, ref startDate, ref compareStartDate, ref toAddressEmail);
+            ReadInputParameters(args, ref analyzerRq, ref startDate, ref compareStartDate, ref toAddressEmail, ref executeSorcReport);
 
-            await analyzerService.RunAnalysisAsync(analyzerRq, startDate, compareStartDate, toAddressEmail);
+            await analyzerService.RunAnalysisAsync(analyzerRq, startDate, compareStartDate, toAddressEmail, executeSorcReport);
         }
         catch (Exception ex)
         {
@@ -81,7 +82,7 @@ public class Program
         }
     }
 
-    private static void ReadInputParameters(string[] args, ref List<string> analyzerRq, ref DateTime startDate, ref DateTime compareStartDate, ref List<string> toAddressEmail)
+    private static void ReadInputParameters(string[] args, ref List<string> analyzerRq, ref DateTime startDate, ref DateTime compareStartDate, ref List<string> toAddressEmail, ref bool executeSorcReport)
     {
         if (args.Length >= 2)
         {
@@ -140,6 +141,16 @@ public class Program
             else
             {
                 Console.WriteLine("Invalid compare date time format. Default DataTime : " + compareStartDate);
+            }
+        }
+
+        if (args.Length >= 6)
+        {
+            string sorcReport = args[5];
+            if (bool.TryParse(sorcReport, out bool sorc))
+            {
+                executeSorcReport = sorc;
+                Console.WriteLine("SORC Report : " + sorc);
             }
         }
     }

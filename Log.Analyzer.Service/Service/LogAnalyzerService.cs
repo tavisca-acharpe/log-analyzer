@@ -19,13 +19,13 @@ namespace Log.Analyzer.Service
             _notifier = notifier;
         }
 
-        public async Task RunAnalysisAsync(List<string> applications, DateTime startDate, DateTime compareStartDate, List<string> toAddressesEmail)
+        public async Task RunAnalysisAsync(List<string> applications, DateTime startDate, DateTime compareStartDate, List<string> toAddressesEmail, bool executeSorcReport)
         {
             var emailBody = string.Empty;
 
             emailBody = await GetBookingStats(startDate, emailBody);
             emailBody = await GetCancellationStats(startDate, emailBody);
-            emailBody = await GetNgSorcFailureStats(startDate, emailBody, toAddressesEmail);
+            emailBody = await GetNgSorcFailureStats(startDate, emailBody, executeSorcReport);
             emailBody = await GetExceptionAndFailures(applications, startDate, compareStartDate, emailBody);
 
             if (!string.IsNullOrWhiteSpace(emailBody))
@@ -130,23 +130,19 @@ namespace Log.Analyzer.Service
             return emailBody;
         }
 
-        private async Task<string> GetNgSorcFailureStats(DateTime startDate, string emailBody, List<string> toAddressesEmail)
+        private async Task<string> GetNgSorcFailureStats(DateTime startDate, string emailBody, bool executeSorcReport)
         {
-            if (!toAddressesEmail.Contains("sorc"))
+            if (!executeSorcReport)
             {
                 Console.WriteLine("SORC Report Disabled.");
                 return emailBody; // Exit the method
-            }
-            else
-            {
-                toAddressesEmail.Remove("sorc");
             }
 
             Console.WriteLine("\n**********************************************");
             Console.WriteLine("\nSORC Create Order Checking Last 12 hrs Bookings");
 
             var startTime = DateTime.UtcNow.AddHours(-24);
-            var endTime = DateTime.UtcNow.AddMinutes(-10);
+            var endTime = DateTime.UtcNow.AddMinutes(-30);
             Console.WriteLine("Booking Logs StartTime : " + startDate + " EndTime : " + endTime);
             var latestBookings = await _elasticSearchService.GetDataAsync(_esSettings.BookingSuccessStatsQuery, startDate, endTime);
             var successBookings = latestBookings?.Where(x => x.SuccessCount > 0)?.ToList();
